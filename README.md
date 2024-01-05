@@ -63,11 +63,12 @@ It turns out that this project gained a lot of attention from Supabase users, as
 
 Run the below SQL queries in your Supabase SQL editor on https://app.supabase.io/project/sql .
 
-### Tables
-
-`products`
 
 ```sql
+-- Tables
+
+-- `products`
+
 create table products (
   id uuid default uuid_generate_v4() primary key,
   title text,
@@ -87,11 +88,10 @@ create table products (
 
 -- enable RLS
 alter table products enable row level security;
-```
 
-`views`
 
-```sql
+-- `views`
+
 create table views (
   id uuid default uuid_generate_v4() primary key,
   created_at timestamp default now(),
@@ -101,13 +101,11 @@ create table views (
 
 -- enable RLS
 alter table views enable row level security;
-```
 
-### Views
+--  Views
 
-`products_view`
+-- `products_view`
 
-```sql
 create view products_view as
   select
     products.id,
@@ -128,11 +126,10 @@ create view products_view as
     left join views on products.id = views.product_id
   where products.approved = true
   group by products.id;
-```
 
-`tags_view`
 
-```sql
+-- `tags_view`
+
 create view tags_view as
   select
     s.tags,
@@ -144,13 +141,12 @@ create view tags_view as
     where products.approved = true
   ) s
   group by s.tags;
-```
 
-### Functions
 
-`get_related_products`
+-- Functions
 
-```sql
+-- `get_related_products`
+
 create or replace function public.get_related_products(parent_id uuid)
   returns setof products_view
   language plpgsql
@@ -158,12 +154,11 @@ as $$
 begin
   return query
     select * from products_view where id <> parent_id order by random();
-end; $$
-```
+end $$;
 
-`get_tags`
 
-```sql
+-- `get_tags`
+
 create or replace function public.get_tags(tag text)
   returns setof products_view
   language plpgsql
@@ -171,12 +166,11 @@ as $$
 begin
   return query
     select * from products_view where tag % any(categories);
-end; $$
-```
+end $$;
 
-`get_supabase_tags`
 
-```sql
+-- `get_supabase_tags`
+
 create or replace function public.get_supabase_tags(tag text)
   returns setof products_view
   language plpgsql
